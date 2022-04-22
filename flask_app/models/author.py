@@ -10,7 +10,7 @@ class Author:
         self.name = data['name']
         self.created_at = data['created_at']
         self.updated_at = data['updated_at']
-        self.books = []
+        self.favorite_books = []
 
     @classmethod
     def show_all_authors(cls):
@@ -47,12 +47,12 @@ class Author:
 
             book_data = {
                 'id' : row['books.id'],
-                'title' : row['books.title'],
-                'pages' : row['books.pages'],
+                'title' : row['title'],
+                'pages' : row['pages'],
                 'created_at' : row['created_at'],
                 'updated_at' : row['updated_at']    
             }
-            author.books.append(book.Book(book_data))
+            author.favorite_books.append(book.Book(book_data))
 
         return author
 
@@ -61,11 +61,11 @@ class Author:
         query = "SELECT * FROM authors WHERE authors.id NOT IN (SELECT author_id FROM favorites WHERE book_id = %(id)s )"
 
         results = connectToMySQL(db).query_db(query, data)
-        print (results)
+        
         authors = []
         for row in results:
             authors.append(cls(row))
-        print(authors)
+        
         return authors
 
     @classmethod

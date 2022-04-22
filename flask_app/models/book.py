@@ -11,7 +11,7 @@ class Book:
         self.pages = data['pages']
         self.created_at = data['created_at']
         self.updated_at = data['updated_at']
-        self.authors = []
+        self.authors_who_favorited = []
 
     @classmethod
     def show_all_books(cls):
@@ -36,7 +36,7 @@ class Book:
 
     @classmethod
     def get_book_favorites(cls, data):
-        query = "SELECT * FROM books JOIN favorites ON books.id = favorites.book_id JOIN authors ON authors.id = favorites.author_id WHERE books.id = %(book_id)s;"
+        query = "SELECT * FROM books JOIN favorites ON books.id = favorites.book_id JOIN authors ON authors.id = favorites.author_id WHERE books.id = %(id)s;"
 
         result = connectToMySQL(db).query_db(query, data)
 
@@ -45,12 +45,12 @@ class Book:
         for row in result:
             author_data = {
                 'id' : row['authors.id'],
-                'title' : row['authors.name'],
+                'name' : row['name'],
                 'created_at' : row['created_at'],
                 'updated_at' : row['updated_at']    
             }
-
-        book.author.append(author.Author(author_data))
+            book.authors_who_favorited.append(author.Author(author_data))
+        
         return book
 
     @classmethod
@@ -58,9 +58,9 @@ class Book:
         query = "SELECT * FROM books WHERE books.id NOT IN (SELECT book_id FROM favorites WHERE author_id = %(id)s )"
 
         results = connectToMySQL(db).query_db(query, data)
-        print (results)
+        # create an empty list books, loop through results of query and append each row of the table it returns as an instance of the class Book
         books = []
         for row in results:
             books.append(cls(row))
-        print(books)
+        
         return books

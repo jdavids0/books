@@ -27,7 +27,7 @@ def create_author():
 
     return redirect ('/authors')
 
-@app.route ('/authors/<int:id>')
+@app.route ('/author/<int:id>')
 def show_author_faves(id):
     data = {
         'id' : id
@@ -38,5 +38,10 @@ def show_author_faves(id):
 
 @app.route ('/add/author/favorite', methods=['POST'])
 def add_author_favorite():
-
-    return redirect ('/author/<int:id>')
+    data = {
+        'author_id': request.form['author_id'],
+        'book_id' : request.form['book_id']
+    }
+    Author.add_favorite(data)
+    # needs to be an f-string bc you're not pulling id directly from form, so can't just convert it directly with <>, need to convert entire url into string ??
+    return redirect (f"/author/{request.form['author_id']}")
